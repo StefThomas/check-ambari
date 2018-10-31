@@ -38,22 +38,32 @@ func checkNode(c *cli.Context) error {
 		monitoringData.ToSdtOut()
 	}
 
-	if len(alerts) > 0 {
-		monitoringData.AddPerfdata("nbAlert", len(alerts), "")
-	} else {
-		monitoringData.AddMessage("All works fine !")
+	nbAlert := 0
+	for _, alert := range alerts {
+
+		// Skip Unkown alert
+		if alert.AlertInfo.State != "UNKNOWN" {
+
+			if nbAlert == 0 {
+				monitoringData.AddMessage("There are some problems !")
+			}
+			nbAlert++
+
+			if alert.AlertInfo.ServiceName != "" && alert.AlertInfo.ComponentName != "" {
+				monitoringData.AddMessage("%s - %s/%s - %s", alert.AlertInfo.State, alert.AlertInfo.ServiceName, alert.AlertInfo.ComponentName, alert.AlertInfo.Label)
+			} else if alert.AlertInfo.ServiceName != "" {
+				monitoringData.AddMessage("%s - %s - %s", alert.AlertInfo.State, alert.AlertInfo.ServiceName, alert.AlertInfo.Label)
+			} else {
+				monitoringData.AddMessage("%s - %s", alert.AlertInfo.State, alert.AlertInfo.Label)
+			}
+
+			monitoringData.SetStatusAsString(alert.AlertInfo.State)
+		}
 	}
 
-	for _, alert := range alerts {
-		if alert.AlertInfo.ServiceName != "" && alert.AlertInfo.ComponentName != "" {
-			monitoringData.AddMessage("%s/%s - %s", alert.AlertInfo.ServiceName, alert.AlertInfo.ComponentName, alert.AlertInfo.Text)
-		} else if alert.AlertInfo.ServiceName != "" {
-			monitoringData.AddMessage("%s - %s", alert.AlertInfo.ServiceName, alert.AlertInfo.Text)
-		} else {
-			monitoringData.AddMessage(alert.AlertInfo.Text)
-		}
-
-		monitoringData.SetStatusAsString(alert.AlertInfo.State)
+	monitoringData.AddPerfdata("nbAlert", nbAlert, "")
+	if nbAlert == 0 {
+		monitoringData.AddMessage("All works fine !")
 	}
 
 	monitoringData.ToSdtOut()
