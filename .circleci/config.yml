@@ -51,6 +51,7 @@ workflows:
             tags:
               only: /.*/
       - release:
+          context: org-global
           requires:
             - build
           filters:
