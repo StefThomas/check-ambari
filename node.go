@@ -38,33 +38,15 @@ func checkNode(c *cli.Context) error {
 		monitoringData.ToSdtOut()
 	}
 
-	nbAlert := 0
+	// Remove all UNKNOWN alert before to compute them
+	filterAlerts := make([]client.Alert, 0, 1)
 	for _, alert := range alerts {
-
-		// Skip Unkown alert
 		if alert.AlertInfo.State != "UNKNOWN" {
-
-			if nbAlert == 0 {
-				monitoringData.AddMessage("There are some problems !")
-			}
-			nbAlert++
-
-			if alert.AlertInfo.ServiceName != "" && alert.AlertInfo.ComponentName != "" {
-				monitoringData.AddMessage("%s - %s/%s - %s", alert.AlertInfo.State, alert.AlertInfo.ServiceName, alert.AlertInfo.ComponentName, alert.AlertInfo.Label)
-			} else if alert.AlertInfo.ServiceName != "" {
-				monitoringData.AddMessage("%s - %s - %s", alert.AlertInfo.State, alert.AlertInfo.ServiceName, alert.AlertInfo.Label)
-			} else {
-				monitoringData.AddMessage("%s - %s", alert.AlertInfo.State, alert.AlertInfo.Label)
-			}
-
-			monitoringData.SetStatusAsString(alert.AlertInfo.State)
+			filterAlerts = append(filterAlerts, alert)
 		}
 	}
 
-	monitoringData.AddPerfdata("nbAlert", nbAlert, "")
-	if nbAlert == 0 {
-		monitoringData.AddMessage("All works fine !")
-	}
+	monitoringData = computeState(filterAlerts, monitoringData, []string{})
 
 	monitoringData.ToSdtOut()
 	return nil
