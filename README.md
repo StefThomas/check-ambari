@@ -44,6 +44,8 @@ You need to lauch the following command:
 You need to specify the following parameters:
 - **--cluster-name**: The cluster name where you should to check the node state.
 - **--node-name**: The node name that you should to check (normally it's fqdn name)
+- **--include-alerts**: Check only the alerts in this list, separated by coma.
+- **--exclude-alerts**: Don't check the alerts in this list, separated by coma.
 
 This check follow this logic:
 1. `OK` when there are no Ambari alert in node
@@ -69,6 +71,8 @@ You need to specify the following parameters:
 - **--cluster-name**: The cluster name where you should to check the node state.
 - **--service-name**: The service name that you should to check.
 - **--exclude-node-alerts** (optionnal): look only alert in service scope, so it's exclude all node alerts.
+- **--include-alerts**: Check only the alerts in this list, separated by coma.
+- **--exclude-alerts**: Don't check the alerts in this list, separated by coma.
 
 This check follow this logic:
 1. `OK` when there are no Ambari alert in service
