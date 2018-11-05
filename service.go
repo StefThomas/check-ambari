@@ -47,10 +47,19 @@ func checkService(c *cli.Context) error {
 		}
 	}
 
+	params := &OptionnalComputeState{}
 	if c.Bool("exclude-node-alerts") {
-		monitoringData = computeState(filterAlerts, monitoringData, []string{"SERVICE"})
-	} else {
-		monitoringData = computeState(filterAlerts, monitoringData, []string{})
+		params.Scopes = []string{"SERVICE"}
+	}
+	if c.String("include-alerts") != "" {
+		params.IncludeAlerts = strings.Split(c.String("include-alerts"), ",")
+	}
+	if c.String("exclude-alerts") != "" {
+		params.ExcludeAlerts = strings.Split(c.String("exclude-alerts"), ",")
+	}
+	monitoringData, err = computeState(filterAlerts, monitoringData, params)
+	if err != nil {
+		return err
 	}
 
 	monitoringData.ToSdtOut()

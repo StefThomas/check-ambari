@@ -5,6 +5,7 @@ import (
 	"github.com/disaster37/go-ambari-rest/client"
 	"github.com/disaster37/go-nagios"
 	"gopkg.in/urfave/cli.v1"
+	"strings"
 )
 
 // Perform a node check
@@ -24,6 +25,14 @@ func checkNode(c *cli.Context) error {
 	}
 	if c.String("node-name") == "" {
 		return cli.NewExitError("You must set --node-name parameter", nagiosPlugin.STATUS_UNKNOWN)
+	}
+
+	params := &OptionnalComputeState{}
+	if c.String("include-alerts") != "" {
+		params.IncludeAlerts = strings.Split(c.String("include-alerts"), ",")
+	}
+	if c.String("exclude-alerts") != "" {
+		params.ExcludeAlerts = strings.Split(c.String("exclude-alerts"), ",")
 	}
 
 	// Get Ambari connection
@@ -46,7 +55,10 @@ func checkNode(c *cli.Context) error {
 		}
 	}
 
-	monitoringData = computeState(filterAlerts, monitoringData, []string{})
+	monitoringData, err = computeState(filterAlerts, monitoringData, params)
+	if err != nil {
+		return err
+	}
 
 	monitoringData.ToSdtOut()
 	return nil

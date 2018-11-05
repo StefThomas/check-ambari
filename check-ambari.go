@@ -69,6 +69,14 @@ func main() {
 					Name:  "service-name",
 					Usage: "The service name you should to check state",
 				},
+				cli.StringFlag{
+					Name:  "include-alerts",
+					Usage: "The list of alerts to check, separated by coma",
+				},
+				cli.StringFlag{
+					Name:  "exclude-alerts",
+					Usage: "The list of alerts to exclude, separated by coma",
+				},
 				cli.BoolFlag{
 					Name:  "exclude-node-alerts",
 					Usage: "Use it if you should to exclude node alerts because of you already check by another way",
@@ -87,6 +95,14 @@ func main() {
 				cli.StringFlag{
 					Name:  "node-name",
 					Usage: "The node name you should to check",
+				},
+				cli.StringFlag{
+					Name:  "include-alerts",
+					Usage: "The list of alerts to check, separated by coma",
+				},
+				cli.StringFlag{
+					Name:  "exclude-alerts",
+					Usage: "The list of alerts to exclude, separated by coma",
 				},
 			},
 			Action: checkNode,
