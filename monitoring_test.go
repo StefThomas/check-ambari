@@ -3,15 +3,23 @@ package main
 import (
 	"github.com/disaster37/go-ambari-rest/client"
 	"github.com/disaster37/go-nagios"
+	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
 func TestComputeState(t *testing.T) {
 
+	logrus.SetLevel(logrus.DebugLevel)
+
 	// when no alerts
+	params := &OptionnalComputeState{}
 	monitoringData := nagiosPlugin.NewMonitoring()
-	monitoringData = computeState(make([]client.Alert, 0, 0), monitoringData, []string{})
+	params.Scopes = nil
+	params.IncludeAlerts = nil
+	params.ExcludeAlerts = nil
+	monitoringData, err := computeState(make([]client.Alert, 0, 0), monitoringData, params)
+	assert.NoError(t, err)
 	assert.Equal(t, 0, monitoringData.Status())
 	assert.Equal(t, 1, len(monitoringData.Perfdatas()))
 	assert.Equal(t, 1, len(monitoringData.Messages()))
@@ -29,7 +37,11 @@ func TestComputeState(t *testing.T) {
 	}
 	listAlert := make([]client.Alert, 0, 2)
 	listAlert = append(listAlert, alert1)
-	monitoringData = computeState(listAlert, monitoringData, []string{})
+	params.Scopes = nil
+	params.IncludeAlerts = nil
+	params.ExcludeAlerts = nil
+	monitoringData, err = computeState(listAlert, monitoringData, params)
+	assert.NoError(t, err)
 	assert.Equal(t, 1, monitoringData.Status())
 	assert.Equal(t, 1, len(monitoringData.Perfdatas()))
 	assert.Equal(t, 2, len(monitoringData.Messages()))
@@ -46,15 +58,75 @@ func TestComputeState(t *testing.T) {
 		},
 	}
 	listAlert = append(listAlert, alert2)
-	monitoringData = computeState(listAlert, monitoringData, []string{})
+	params.Scopes = nil
+	params.IncludeAlerts = nil
+	params.ExcludeAlerts = nil
+	monitoringData, err = computeState(listAlert, monitoringData, params)
+	assert.NoError(t, err)
 	assert.Equal(t, 2, monitoringData.Status())
 	assert.Equal(t, 1, len(monitoringData.Perfdatas()))
 	assert.Equal(t, 3, len(monitoringData.Messages()))
 
 	// When include only specific scope
+	params.Scopes = []string{"SERVICE"}
+	params.IncludeAlerts = nil
+	params.ExcludeAlerts = nil
 	monitoringData = nagiosPlugin.NewMonitoring()
-	monitoringData = computeState(listAlert, monitoringData, []string{"SERVICE"})
+	monitoringData, err = computeState(listAlert, monitoringData, params)
+	assert.NoError(t, err)
 	assert.Equal(t, 1, monitoringData.Status())
 	assert.Equal(t, 1, len(monitoringData.Perfdatas()))
 	assert.Equal(t, 2, len(monitoringData.Messages()))
+
+	// When we use exclude list
+	params.Scopes = nil
+	params.IncludeAlerts = nil
+	params.ExcludeAlerts = []string{"label2"}
+	monitoringData = nagiosPlugin.NewMonitoring()
+	monitoringData, err = computeState(listAlert, monitoringData, params)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, monitoringData.Status())
+	assert.Equal(t, 1, len(monitoringData.Perfdatas()))
+	assert.Equal(t, 2, len(monitoringData.Messages()))
+
+	// When we use include list
+	params.Scopes = nil
+	params.ExcludeAlerts = nil
+	params.IncludeAlerts = []string{"label"}
+	monitoringData = nagiosPlugin.NewMonitoring()
+	monitoringData, err = computeState(listAlert, monitoringData, params)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, monitoringData.Status())
+	assert.Equal(t, 1, len(monitoringData.Perfdatas()))
+	assert.Equal(t, 2, len(monitoringData.Messages()))
+
+	// When we use exclude list with scope
+	params.Scopes = []string{"SERVICE"}
+	params.IncludeAlerts = nil
+	params.ExcludeAlerts = []string{"label2"}
+	monitoringData = nagiosPlugin.NewMonitoring()
+	monitoringData, err = computeState(listAlert, monitoringData, params)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, monitoringData.Status())
+	assert.Equal(t, 1, len(monitoringData.Perfdatas()))
+	assert.Equal(t, 2, len(monitoringData.Messages()))
+
+	// When we use include list with scope
+	params.Scopes = []string{"SERVICE"}
+	params.ExcludeAlerts = nil
+	params.IncludeAlerts = []string{"label"}
+	monitoringData = nagiosPlugin.NewMonitoring()
+	monitoringData, err = computeState(listAlert, monitoringData, params)
+	assert.NoError(t, err)
+	assert.Equal(t, 1, monitoringData.Status())
+	assert.Equal(t, 1, len(monitoringData.Perfdatas()))
+	assert.Equal(t, 2, len(monitoringData.Messages()))
+
+	// When we use include and exlude list in same time
+	params.Scopes = nil
+	params.ExcludeAlerts = []string{"label"}
+	params.IncludeAlerts = []string{"label"}
+	monitoringData = nagiosPlugin.NewMonitoring()
+	monitoringData, err = computeState(listAlert, monitoringData, params)
+	assert.Error(t, err)
 }
