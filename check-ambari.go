@@ -63,11 +63,11 @@ func main() {
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "cluster-name",
-					Usage: "The cluster name you should to check state",
+					Usage: "The cluster name you want to check the state",
 				},
 				cli.StringFlag{
 					Name:  "service-name",
-					Usage: "The service name you should to check state",
+					Usage: "The service name you want to check the state",
 				},
 				cli.StringFlag{
 					Name:  "include-alerts",
@@ -79,7 +79,7 @@ func main() {
 				},
 				cli.BoolFlag{
 					Name:  "exclude-node-alerts",
-					Usage: "Use it if you should to exclude node alerts because of you already check by another way",
+					Usage: "Use it if you want to exclude some node alerts, because they’re already checked another way",
 				},
 			},
 			Action: checkService,
@@ -90,11 +90,11 @@ func main() {
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "cluster-name",
-					Usage: "The cluster name you should to check state",
+					Usage: "The cluster name you want to check the state",
 				},
 				cli.StringFlag{
 					Name:  "node-name",
-					Usage: "The node name you should to check",
+					Usage: "The node name you want to check the state",
 				},
 				cli.StringFlag{
 					Name:  "include-alerts",
@@ -129,14 +129,14 @@ func manageGlobalParameters() error {
 	}
 
 	if ambariUrl == "" {
-		return errors.New("You must set --ambari-url parameter")
+		return errors.New("You must set the --ambari-url parameter")
 	}
 
 	if ambariLogin == "" {
-		return errors.New("You must set --ambari-login parameter")
+		return errors.New("You must set the --ambari-login parameter")
 	}
 	if ambariPassword == "" {
-		return errors.New("You must set --ambari-password parameter")
+		return errors.New("You must set the --ambari-password parameter")
 	}
 
 	return nil

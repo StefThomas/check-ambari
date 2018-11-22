@@ -21,10 +21,10 @@ func checkNode(c *cli.Context) error {
 
 	// Check current parameters
 	if c.String("cluster-name") == "" {
-		return cli.NewExitError("You must set --cluster-name parameter", nagiosPlugin.STATUS_UNKNOWN)
+		return cli.NewExitError("You must set the --cluster-name parameter", nagiosPlugin.STATUS_UNKNOWN)
 	}
 	if c.String("node-name") == "" {
-		return cli.NewExitError("You must set --node-name parameter", nagiosPlugin.STATUS_UNKNOWN)
+		return cli.NewExitError("You must set the --node-name parameter", nagiosPlugin.STATUS_UNKNOWN)
 	}
 
 	params := &OptionnalComputeState{}
@@ -42,7 +42,7 @@ func checkNode(c *cli.Context) error {
 	// Check node alertes
 	alerts, err := ambariClient.AlertsInHost(c.String("cluster-name"), c.String("node-name"))
 	if err != nil {
-		monitoringData.AddMessage("Somethink wrong when try to check node alerts on %s: %v", c.String("node-name"), err)
+		monitoringData.AddMessage("Something went wrong when trying to check node alerts on %s: %v", c.String("node-name"), err)
 		monitoringData.SetStatus(nagiosPlugin.STATUS_UNKNOWN)
 		monitoringData.ToSdtOut()
 	}

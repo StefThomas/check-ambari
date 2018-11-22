@@ -21,10 +21,10 @@ func checkService(c *cli.Context) error {
 
 	// Check current parameters
 	if c.String("cluster-name") == "" {
-		return cli.NewExitError("You must set --cluster-name parameter", nagiosPlugin.STATUS_UNKNOWN)
+		return cli.NewExitError("You must set the --cluster-name parameter", nagiosPlugin.STATUS_UNKNOWN)
 	}
 	if c.String("service-name") == "" {
-		return cli.NewExitError("You must set --service-name parameter", nagiosPlugin.STATUS_UNKNOWN)
+		return cli.NewExitError("You must set the --service-name parameter", nagiosPlugin.STATUS_UNKNOWN)
 	}
 
 	// Get Ambari connection
@@ -34,7 +34,7 @@ func checkService(c *cli.Context) error {
 	// Check service alertes
 	alerts, err := ambariClient.AlertsInService(c.String("cluster-name"), strings.ToUpper(c.String("service-name")))
 	if err != nil {
-		monitoringData.AddMessage("Somethink wrong when try to check service alerts on %s: %v", c.String("service-name"), err)
+		monitoringData.AddMessage("Something went wrong when trying to check service alerts on %s: %v", c.String("service-name"), err)
 		monitoringData.SetStatus(nagiosPlugin.STATUS_UNKNOWN)
 		monitoringData.ToSdtOut()
 	}

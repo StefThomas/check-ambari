@@ -42,13 +42,13 @@ func computeState(alerts []client.Alert, monitoringData *nagiosPlugin.Monitoring
 						for _, excludeAlert := range params.ExcludeAlerts {
 							if excludeAlert == alert.AlertInfo.Label {
 								isExclude = true
-								log.Debugf("Alert %s is exclude", alert.AlertInfo.Label)
+								log.Debugf("Alert %s is excluded", alert.AlertInfo.Label)
 								break
 							}
 						}
 						if isExclude == false {
 							filterAlerts = append(filterAlerts, alert)
-							log.Debugf("Alert %s is not exclude", alert.AlertInfo.Label)
+							log.Debugf("Alert %s is not excluded", alert.AlertInfo.Label)
 
 						}
 					} else if len(params.IncludeAlerts) > 0 {
@@ -56,16 +56,16 @@ func computeState(alerts []client.Alert, monitoringData *nagiosPlugin.Monitoring
 						for _, includeAlert := range params.IncludeAlerts {
 							if includeAlert == alert.AlertInfo.Label {
 								filterAlerts = append(filterAlerts, alert)
-								log.Debugf("Alert %s is include", alert.AlertInfo.Label)
+								log.Debugf("Alert %s is included", alert.AlertInfo.Label)
 								break
 							}
 						}
 					} else {
 						filterAlerts = append(filterAlerts, alert)
-						log.Debugf("Alert %s is not exclude/include", alert.AlertInfo.Label)
+						log.Debugf("Alert %s is not excluded/included", alert.AlertInfo.Label)
 					}
 				} else {
-					log.Debugf("Alert %s in not the require scope", alert.AlertInfo.Label)
+					log.Debugf("Alert %s in not in the required scope", alert.AlertInfo.Label)
 				}
 			}
 		} else {
@@ -74,13 +74,13 @@ func computeState(alerts []client.Alert, monitoringData *nagiosPlugin.Monitoring
 				for _, excludeAlert := range params.ExcludeAlerts {
 					if excludeAlert == alert.AlertInfo.Label {
 						isExclude = true
-						log.Debugf("Alert %s is exclude", alert.AlertInfo.Label)
+						log.Debugf("Alert %s is excluded", alert.AlertInfo.Label)
 						break
 					}
 				}
 				if isExclude == false {
 					filterAlerts = append(filterAlerts, alert)
-					log.Debugf("Alert %s is not exclude", alert.AlertInfo.Label)
+					log.Debugf("Alert %s is not excluded", alert.AlertInfo.Label)
 
 				}
 			} else if len(params.IncludeAlerts) > 0 {
@@ -88,13 +88,13 @@ func computeState(alerts []client.Alert, monitoringData *nagiosPlugin.Monitoring
 				for _, includeAlert := range params.IncludeAlerts {
 					if includeAlert == alert.AlertInfo.Label {
 						filterAlerts = append(filterAlerts, alert)
-						log.Debugf("Alert %s is include", alert.AlertInfo.Label)
+						log.Debugf("Alert %s is included", alert.AlertInfo.Label)
 						break
 					}
 				}
 			} else {
 				filterAlerts = append(filterAlerts, alert)
-				log.Debugf("Alert %s is not include/exclude", alert.AlertInfo.Label)
+				log.Debugf("Alert %s is not included/excluded", alert.AlertInfo.Label)
 			}
 		}
 	}
@@ -103,9 +103,9 @@ func computeState(alerts []client.Alert, monitoringData *nagiosPlugin.Monitoring
 	nbAlert := len(filterAlerts)
 	monitoringData.AddPerfdata("nbAlert", nbAlert, "")
 	if nbAlert == 0 {
-		monitoringData.AddMessage("All works fine !")
+		monitoringData.AddMessage("All is working fine.")
 	} else {
-		monitoringData.AddMessage("There are some problems !")
+		monitoringData.AddMessage("There are some problems!")
 		for _, alert := range filterAlerts {
 			log.Debugf("Process alert %s", alert.AlertInfo.Label)
 
